@@ -51,7 +51,7 @@ var requestHandler = function(request, response) {
   if (method === "OPTIONS") {
     response.writeHead(200, headers);
     response.end();
-  } else if (method === "POST"  && (url === '/classes/messages' || url === '/classes/room1' || url === '/') && query) {
+  } else if (method === "POST"  && (url === '/classes/messages' || url === '/classes/room1' || url === '/')) {
     // console.log('POST');
 
     request.on('error', function(err) {
@@ -81,9 +81,7 @@ var requestHandler = function(request, response) {
     // response.end(JSON.stringify(res), 'utf-8');
 
   } else if (method === "GET"){// && (url === '/classes/messages' || url === '/classes/room1' || url === '/') && query) {
-    console.log('GET');
-    console.log(query);
-    console.log(global.body.results);
+    // console.log('GET');
 
 
     response.writeHead(200, headers);
@@ -91,14 +89,16 @@ var requestHandler = function(request, response) {
     // response.on('data', function(chunk) {
     //   global.body.results.push(chunk);
     // });
+    var res = global.body.results;
 
-
-var res = global.body.results.sort(function(a, b) {
-      var one = new Date(a.createdAt);
-      var two = new Date(b.createdAt);
-      return (one - two) * -1;
-    });
-console.log("*** RES:", res);
+    if (query.order === '-createdAt') {
+      console.log('query matched');
+      var res = global.body.results.sort(function(a, b) {
+        var one = new Date(a.createdAt);
+        var two = new Date(b.createdAt);
+        return (one - two) * -1;
+      });
+    }
 
     // response.write(JSON.stringify(global.body));
     response.write(JSON.stringify(res));

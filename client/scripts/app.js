@@ -7,8 +7,7 @@ var app = {
   data: {},
   friends: [],
   server: 'http://127.0.0.1:3000',
-  userName: (window.location.search).match(/(&|\?)username=(.+)/)[2],
-// sort: {'createdAt': -1},
+  userName: (window.location.search).substr(10),
 
 
   init: function(){
@@ -112,7 +111,6 @@ var app = {
 
       }
         $("#chats").append(msg);
-        // msg.empty();
     }
   },
 
@@ -143,8 +141,6 @@ var app = {
 
   handleSubmit: function(message) {
     app.send(message);
-    //app.fetch();
-
   },
 
 
@@ -175,6 +171,7 @@ $(document).ready(function() {
     };
     // console.log(newMsg);
     app.handleSubmit(newMsg);
+    $('#message').val('');
   });
 
 
