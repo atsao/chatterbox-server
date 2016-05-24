@@ -36,6 +36,7 @@ var requestHandler = function(request, response) {
   var headers = defaultCorsHeaders;
   var method = request.method;
   var url = request.url;
+  var query = parser.parse(url, true).query;
 
 
   // headers['Content-Type'] = "application/json; charset=utf-8";
@@ -52,13 +53,12 @@ var requestHandler = function(request, response) {
     var body = global.body;
   }
 
-  var query = parser.parse(url, true).query;
   // console.log("***** QUERY:", query);
   
   if (method === "OPTIONS") {
     response.writeHead(200, headers);
     response.end();
-  } else if (method === "POST"  && (url === '/classes/messages' || url === '/classes/room1' || url === '/')) {
+  } else if (method === "POST" && (url === '/classes/messages' || url === '/classes/room1' || url === '/' || url === '/classes/room' || url.match(/^\/\?.+/i))) {
     // console.log('POST');
 
     request.on('error', function(err) {
@@ -87,7 +87,8 @@ var requestHandler = function(request, response) {
     response.end(JSON.stringify(global.body), 'utf-8');
     // response.end(JSON.stringify(res), 'utf-8');
 
-  } else if (method === "GET" && (url === '/classes/messages' || url === '/classes/room1' || url === '/' || url.match(/^\/\?.+/i))) {
+  // } else if (method === "GET" && (url === '/classes/messages' || url === '/classes/room1' || url === '/' || url.match(/^\/\?.+/i))) {
+  } else if (method === "GET" && (url === '/classes/messages' || url === '/classes/room1' || url === '/' || url === '/classes/room' || url.match(/^\/\?.+/i))) {
     // console.log('GET');
 
     response.writeHead(200, headers);
