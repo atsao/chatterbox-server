@@ -6,7 +6,7 @@
 var app = {
   data: {},
   friends: [],
-  server: 'http://127.0.0.1:3000/classes/messages/',
+  server: 'http://127.0.0.1:3000',
   userName: (window.location.search).match(/(&|\?)username=(.+)/)[2],
 // sort: {'createdAt': -1},
 
@@ -27,13 +27,14 @@ var app = {
       dataType: 'json',
       contentType: 'application/json; charset=utf-8',
       success: function (data) {
-        // console.log('chatterbox: Message sent. Message: ', message);
+        console.log('chatterbox: Message sent. Message: ', message);
         app.clearMessages();
         app.fetch();
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
         console.error('chatterbox: Failed to send message');
+        console.log(data);
       }
     });
 
@@ -52,9 +53,10 @@ var app = {
         //   return a.createdAt < b.createdAt ? -1 : 1;
         // });
 
-        console.log('sorted data:', data['results']);
+        // console.log('sorted data:', data['results']);
 
-        app.sortData(data)
+        app.sortData(JSON.parse(data))
+        // console.log('Data received:', JSON.parse(data));
       },
 
       error: function(data) {

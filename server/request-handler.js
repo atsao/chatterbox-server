@@ -34,10 +34,19 @@ var requestHandler = function(request, response) {
   var method = request.method;
   var url = request.url;  
 
-  headers['Content-Type'] = "application/json; charset=utf-8";
-  
+  // headers['Content-Type'] = "application/json; charset=utf-8";
 
-  if (method === "POST"  && url === '/classes/messages') {
+  if (!global.body) {
+    global.body = {
+      results: []
+    }
+  }
+  
+  if (method === "OPTIONS") {
+
+  response.writeHead(200, headers);
+  response.end();
+  } else if (method === "POST"  && (url === '/classes/messages' || url === '/classes/room1' || url === '/')) {
     // console.log('POST');
 
     request.on('error', function(err) {
@@ -51,12 +60,13 @@ var requestHandler = function(request, response) {
 
     request.on('end', function() {
       // console.log('Body:', JSON.stringify(global.body.results));
-      // console.log('body after:', global.body.results);
+      console.log('body after:', global.body.results);
     });
 
     response.writeHead(201, headers);
-    response.end('Received message!');
-  } else if (method === "GET" && url === '/classes/messages') {
+    response.statusCode = 201;
+    response.end();
+  } else if (method === "GET" && (url === '/classes/messages' || url === '/classes/room1' || url === '/')) {
     // console.log('GET');
 
 
@@ -66,10 +76,13 @@ var requestHandler = function(request, response) {
     //   global.body.results.push(chunk);
     // });
     response.write(JSON.stringify(global.body));
+    // response.end('{"success": "Data retrieved successfully!"}');
+    response.statusCode = 200;
     response.end();
   } else {
     response.writeHead(404, {'Content-Type': 'text/plain'});
-    response.write('NOT FOUND');
+    // response.write('NOT FOUND');
+    response.statusCode = 404;
     response.end("Sorry. Does not compute.");
   }
 
