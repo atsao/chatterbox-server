@@ -43,9 +43,8 @@ var requestHandler = function(request, response) {
   }
   
   if (method === "OPTIONS") {
-
-  response.writeHead(200, headers);
-  response.end();
+    response.writeHead(200, headers);
+    response.end();
   } else if (method === "POST"  && (url === '/classes/messages' || url === '/classes/room1' || url === '/')) {
     // console.log('POST');
 
@@ -58,14 +57,16 @@ var requestHandler = function(request, response) {
       // console.log('CHUNK:', JSON.parse(chunk));
     });
 
-    request.on('end', function() {
+    request.on('end', function(data) {
+      console.log("********** DATA:", data);
       // console.log('Body:', JSON.stringify(global.body.results));
       console.log('body after:', global.body.results);
     });
 
     response.writeHead(201, headers);
     response.statusCode = 201;
-    response.end();
+    // response.end();
+    response.end(JSON.stringify(global.body), 'utf-8');
   } else if (method === "GET" && (url === '/classes/messages' || url === '/classes/room1' || url === '/')) {
     // console.log('GET');
 

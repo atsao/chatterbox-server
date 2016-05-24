@@ -27,15 +27,17 @@ var app = {
       dataType: 'json',
       contentType: 'application/json; charset=utf-8',
       success: function (data) {
-        console.log('chatterbox: Message sent. Message: ', message);
+        console.log('Chatterbox: Message sent. Message: ', message);
         app.clearMessages();
         app.fetch();
       },
-      error: function (data) {
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-        console.error('chatterbox: Failed to send message');
-        console.log(data);
-      }
+       console.error("Chatterbox: Failed to send message!");
+       console.log(textStatus);
+       console.log(errorThrown);
+
+  }
     });
 
 
@@ -46,7 +48,7 @@ var app = {
       url: app.server,
       type: 'GET',
       contentType: 'application/json; charset=utf-8',
-      // data: 'order=-createdAt',
+      data: {order: '-createdAt'},
       success: function(data) {
         app.data = data;
         // data['results'] = data['results'].sort(function(a,b) {
@@ -77,8 +79,6 @@ var app = {
       "&": "&amp;",
       "<": "&lt;",
       ">": "&gt;",
-      '"': '&quot;',
-      "'": '&#39;',
       "/": '&#x2F;'
     };
 
@@ -97,9 +97,9 @@ var app = {
         }
         else if (k === 'text') {
           // node.message = JSON.stringify(chats[i][k]).replace('setInterval', '');
-          node.message = JSON.stringify(chats[i][k]).replace(/[&<>"'\/]/g, function(char) {
+          node.message = JSON.stringify(chats[i][k]).replace(/[&<>\/]/g, function(char) {
             return entityMap[char];
-          });
+          }).replace(/[\'\"]/g, '');
           // .escape("&<>\"'`!@$%()=+{}[]")
         }
         var msg = $('<div>').addClass('message');
@@ -165,12 +165,12 @@ $(document).ready(function() {
     var msg = $('#message').val();
     var newMsg = {
       text: msg,
-      //createdAt: new Date(),
+      createdAt: new Date(),
       roomname: 'lobby',
       username: app.userName
       //updatedAt: new Date()
     };
-    console.log(newMsg);
+    // console.log(newMsg);
     app.handleSubmit(newMsg);
   });
 
