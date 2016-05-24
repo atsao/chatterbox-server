@@ -8,12 +8,11 @@ var app = {
   friends: [],
   server: 'http://127.0.0.1:3000',
   userName: (window.location.search).substr(10),
+  currentRoom: '',
 
 
   init: function(){
     app.fetch();
-    // console.log('test');
-    // $('#chats').text('hello');
   },
 
   send: function(message){
@@ -58,6 +57,7 @@ var app = {
 
         app.sortData(JSON.parse(data))
         // console.log('Data received:', JSON.parse(data));
+        $('time.timeago').timeago();
       },
 
       error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -71,7 +71,7 @@ var app = {
   sortData: function(data) {
     var node = {
       username: '',
-      date: '',
+      date: new Date(),
       message: '',
       room: ''
     };
@@ -85,32 +85,47 @@ var app = {
 
     //loop through data
     var chats = data.results;
-    for (var i = 0; i < chats.length; i++) {
-      for (var k in chats[i]) {
-        if (k === 'username') {
-          node.username = chats[i][k];
-        }
-        else if (k === 'createdAt') {
-          node.date = chats[i][k];
-        }
-        else if (k === 'roomname') {
-          node.room = chats[i][k];
-        }
-        else if (k === 'text') {
-          // node.message = JSON.stringify(chats[i][k]).replace('setInterval', '');
-          node.message = JSON.stringify(chats[i][k]).replace(/[&<>\/]/g, function(char) {
-            return entityMap[char];
-          }).replace(/[\'\"]/g, '');
-          // .escape("&<>\"'`!@$%()=+{}[]")
-        }
-        var msg = $('<div>').addClass('message');
-        msg.append($('<h3>').text(node.username).addClass('username'));
-        msg.append($('<p>').text(node.message));
-        msg.append($('<p>').text(node.date));
-        msg.append($('<p>').text(node.room));
+    // for (var i = 0; i < chats.length; i++) {
+    //   for (var k in chats[i]) {
+    //     if (k === 'username') {
+    //       node.username = chats[i][k];
+    //     }
+    //     else if (k === 'createdAt') {
+    //       node.date = chats[i][k];
+    //     }
+    //     else if (k === 'roomname') {
+    //       node.room = chats[i][k];
+    //     }
+    //     else if (k === 'text') {
+    //       // node.message = JSON.stringify(chats[i][k]).replace('setInterval', '');
+    //       node.message = JSON.stringify(chats[i][k]).replace(/[&<>\/]/g, function(char) {
+    //         return entityMap[char];
+    //       }).replace(/[\'\"]/g, '');
+    //       // .escape("&<>\"'`!@$%()=+{}[]")
+    //     }
+    //     var msg = $('<div>').addClass('message');
+    //     msg.append($('<h3>').text(node.username).addClass('username'));
+    //     msg.append($('<p>').text(node.message));
+    //     // msg.append($('<p>').text(node.date));
+    //     console.log(node.date);
+    //     console.log(typeof node.date);
+    //     msg.append($('<time>').text(node.date.toISOString()).addClass('timeago date').attr('datetime', node.date));
+    //     // msg.append($('<p>').text(node.room));
 
-      }
+    //   }
+    //     $("#chats").append(msg);
+    // }
+    for (var i = 0; i < chats.length; i++) {
+      var msg = $('<div>').addClass('message');
+      msg.append($('<h3>').text(chats[i]['username']).addClass('username'));
+      msg.append($('<p>').text(chats[i]['text'].replace(/[&<>\/]/g, function(char) {
+            return entityMap[char];
+          }).replace(/[\'\"]/g, '')));
+      // msg.append($('<p>').text(node.date));
+      msg.append($('<time>').text((new Date(chats[i]['createdAt']))).addClass('timeago date').attr('datetime', new Date(chats[i]['createdAt']).toISOString()));
+      // msg.append($('<p>').text(node.room));
         $("#chats").append(msg);
+      
     }
   },
 
@@ -149,6 +164,9 @@ var app = {
 
 $(document).ready(function() {
   app.init(); // Initialize app
+  app.currentRoom = 'lobby';
+  $('#room').text(app.currentRoom);
+  $('time.timeago').timeago();
   
   $('#clear').on('click', function() {
     app.clearMessages();
@@ -169,6 +187,7 @@ $(document).ready(function() {
       username: app.userName
       //updatedAt: new Date()
     };
+
     // console.log(newMsg);
     app.handleSubmit(newMsg);
     $('#message').val('');
