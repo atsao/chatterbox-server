@@ -50,7 +50,7 @@ var app = {
       contentType: 'application/json; charset=utf-8',
       data: {order: '-createdAt'},
       success: function(data) {
-        app.data = data;
+        // app.data = data;
         // data['results'] = data['results'].sort(function(a,b) {
         //   return a.createdAt < b.createdAt ? -1 : 1;
         // });
@@ -61,8 +61,10 @@ var app = {
         // console.log('Data received:', JSON.parse(data));
       },
 
-      error: function(data) {
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
         console.error('chatterbox: Failed to get data');
+        console.log(textStatus);
+        console.log(errorThrown);
       }
     });
   },
@@ -83,7 +85,7 @@ var app = {
     };
 
     //loop through data
-    var chats = data.results;
+    var chats = data;
     for (var i = 0; i < chats.length; i++) {
       for (var k in chats[i]) {
         if (k === 'username') {
@@ -108,8 +110,9 @@ var app = {
         msg.append($('<p>').text(node.date));
         msg.append($('<p>').text(node.room));
 
-        $("#chats").append(msg);
       }
+        $("#chats").append(msg);
+        // msg.empty();
     }
   },
 

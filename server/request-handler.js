@@ -1,3 +1,6 @@
+var parser = require('url');
+var _ = require('underscore');
+
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -41,11 +44,14 @@ var requestHandler = function(request, response) {
       results: []
     }
   }
+
+  var query = parser.parse(url, true).query;
+  // console.log("***** QUERY:", query);
   
   if (method === "OPTIONS") {
     response.writeHead(200, headers);
     response.end();
-  } else if (method === "POST"  && (url === '/classes/messages' || url === '/classes/room1' || url === '/')) {
+  } else if (method === "POST"  && (url === '/classes/messages' || url === '/classes/room1' || url === '/') && query) {
     // console.log('POST');
 
     request.on('error', function(err) {
@@ -58,17 +64,26 @@ var requestHandler = function(request, response) {
     });
 
     request.on('end', function(data) {
-      console.log("********** DATA:", data);
       // console.log('Body:', JSON.stringify(global.body.results));
       console.log('body after:', global.body.results);
     });
 
     response.writeHead(201, headers);
     response.statusCode = 201;
+
+    // var res = global.body.results.sort(function(a, b) {
+    //   a = new Date(a.createdAt);
+    //   b = new Date(b.createdAt);
+    //   return a > b ? -1 : b < a ? 1 : 0;
+    // });
     // response.end();
     response.end(JSON.stringify(global.body), 'utf-8');
-  } else if (method === "GET" && (url === '/classes/messages' || url === '/classes/room1' || url === '/')) {
-    // console.log('GET');
+    // response.end(JSON.stringify(res), 'utf-8');
+
+  } else if (method === "GET"){// && (url === '/classes/messages' || url === '/classes/room1' || url === '/') && query) {
+    console.log('GET');
+    console.log(query);
+    console.log(global.body.results);
 
 
     response.writeHead(200, headers);
@@ -76,7 +91,17 @@ var requestHandler = function(request, response) {
     // response.on('data', function(chunk) {
     //   global.body.results.push(chunk);
     // });
-    response.write(JSON.stringify(global.body));
+
+
+var res = global.body.results.sort(function(a, b) {
+      var one = new Date(a.createdAt);
+      var two = new Date(b.createdAt);
+      return (one - two) * -1;
+    });
+console.log("*** RES:", res);
+
+    // response.write(JSON.stringify(global.body));
+    response.write(JSON.stringify(res));
     // response.end('{"success": "Data retrieved successfully!"}');
     response.statusCode = 200;
     response.end();
