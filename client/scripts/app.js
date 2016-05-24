@@ -6,7 +6,7 @@
 var app = {
   data: {},
   friends: [],
-  server: 'http://127.0.0.1:3000',
+  server: 'http://127.0.0.1:3000/classes/messages/',
   userName: (window.location.search).match(/(&|\?)username=(.+)/)[2],
 // sort: {'createdAt': -1},
 

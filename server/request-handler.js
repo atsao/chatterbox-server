@@ -32,46 +32,40 @@ var requestHandler = function(request, response) {
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
   var method = request.method;
-  var url = request.url;
-
-  console.log('URL:', url);
-
-  var body = {
-    results: []
-  };
+  var url = request.url;  
 
   headers['Content-Type'] = "application/json; charset=utf-8";
   
 
   if (method === "POST"  && url === '/classes/messages') {
-    console.log('POST');
+    // console.log('POST');
 
     request.on('error', function(err) {
       console.log(err);
     });
 
     request.on('data', function(chunk) {
-      body.results.push(JSON.parse(chunk));
-      console.log('CHUNK:', JSON.parse(chunk));
+      global.body.results.push(JSON.parse(chunk));
+      // console.log('CHUNK:', JSON.parse(chunk));
     });
 
     request.on('end', function() {
-      console.log('Body:', JSON.stringify(body.results));
-      console.log('body after:', body);
+      // console.log('Body:', JSON.stringify(global.body.results));
+      // console.log('body after:', global.body.results);
     });
 
     response.writeHead(201, headers);
     response.end('Received message!');
   } else if (method === "GET" && url === '/classes/messages') {
-    console.log('GET');
+    // console.log('GET');
 
 
     response.writeHead(200, headers);
     // response.setHeader('Content-Type', 'text/plain');
-    response.on('data', function(chunk) {
-      body.results.push(chunk);
-    });
-    response.write(JSON.stringify(body));
+    // response.on('data', function(chunk) {
+    //   global.body.results.push(chunk);
+    // });
+    response.write(JSON.stringify(global.body));
     response.end();
   } else {
     response.writeHead(404, {'Content-Type': 'text/plain'});
