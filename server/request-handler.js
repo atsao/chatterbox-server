@@ -35,14 +35,21 @@ var requestHandler = function(request, response) {
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
   var method = request.method;
-  var url = request.url;  
+  var url = request.url;
+
 
   // headers['Content-Type'] = "application/json; charset=utf-8";
+  // var body = global.body;
 
   if (!global.body) {
-    global.body = {
+    // global.body = {
+    //   results: []
+    // }
+    var body = {
       results: []
     }
+  } else {
+    var body = global.body;
   }
 
   var query = parser.parse(url, true).query;
@@ -65,11 +72,11 @@ var requestHandler = function(request, response) {
 
     request.on('end', function(data) {
       // console.log('Body:', JSON.stringify(global.body.results));
-      console.log('body after:', global.body.results);
+      // console.log('body after:', global.body.results);
     });
 
     response.writeHead(201, headers);
-    response.statusCode = 201;
+    // response.statusCode = 201;
 
     // var res = global.body.results.sort(function(a, b) {
     //   a = new Date(a.createdAt);
@@ -80,20 +87,20 @@ var requestHandler = function(request, response) {
     response.end(JSON.stringify(global.body), 'utf-8');
     // response.end(JSON.stringify(res), 'utf-8');
 
-  } else if (method === "GET"){// && (url === '/classes/messages' || url === '/classes/room1' || url === '/') && query) {
+  } else if (method === "GET" && (url === '/classes/messages' || url === '/classes/room1' || url === '/' || url.match(/^\/\?.+/i))) {
     // console.log('GET');
 
-
     response.writeHead(200, headers);
+
     // response.setHeader('Content-Type', 'text/plain');
     // response.on('data', function(chunk) {
     //   global.body.results.push(chunk);
     // });
-    var res = global.body.results;
+    // var res = global.body.results;
 
     if (query.order === '-createdAt') {
-      console.log('query matched');
-      var res = global.body.results.sort(function(a, b) {
+      // var res = global.body.results.sort(function(a, b) {
+      global.body.results.sort(function(a, b) {
         var one = new Date(a.createdAt);
         var two = new Date(b.createdAt);
         return (one - two) * -1;
@@ -101,9 +108,9 @@ var requestHandler = function(request, response) {
     }
 
     // response.write(JSON.stringify(global.body));
-    response.write(JSON.stringify(res));
+    response.write(JSON.stringify(global.body));
     // response.end('{"success": "Data retrieved successfully!"}');
-    response.statusCode = 200;
+    // response.statusCode = 200;
     response.end();
   } else {
     response.writeHead(404, {'Content-Type': 'text/plain'});

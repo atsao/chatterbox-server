@@ -26,7 +26,7 @@ var app = {
       dataType: 'json',
       contentType: 'application/json; charset=utf-8',
       success: function (data) {
-        console.log('Chatterbox: Message sent. Message: ', message);
+        console.log('Chatterbox: Message sent.');
         app.clearMessages();
         app.fetch();
       },
@@ -84,7 +84,7 @@ var app = {
     };
 
     //loop through data
-    var chats = data;
+    var chats = data.results;
     for (var i = 0; i < chats.length; i++) {
       for (var k in chats[i]) {
         if (k === 'username') {
