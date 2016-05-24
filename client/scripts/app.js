@@ -6,7 +6,7 @@
 var app = {
   data: {},
   friends: [],
-  server: 'http://127.0.0.1:3000/classes/chatterbox',
+  server: 'http://127.0.0.1:3000',
   userName: (window.location.search).match(/(&|\?)username=(.+)/)[2],
 // sort: {'createdAt': -1},
 
@@ -45,7 +45,7 @@ var app = {
       url: app.server,
       type: 'GET',
       contentType: 'application/json; charset=utf-8',
-      data: 'order=-createdAt',
+      // data: 'order=-createdAt',
       success: function(data) {
         app.data = data;
         // data['results'] = data['results'].sort(function(a,b) {

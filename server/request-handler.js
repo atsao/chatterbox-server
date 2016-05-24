@@ -29,29 +29,78 @@ var requestHandler = function(request, response) {
   // console.logs in your code.
   console.log("Serving request type " + request.method + " for url " + request.url);
 
-  // The outgoing status.
-  var statusCode = 200;
-
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
+  var method = request.method;
+  var url = request.url;
 
+  console.log('URL:', url);
+
+  var body = {
+    results: []
+  };
+
+  headers['Content-Type'] = "application/json; charset=utf-8";
+  
+
+  if (method === "POST"  && url === '/classes/messages') {
+    console.log('POST');
+
+    request.on('error', function(err) {
+      console.log(err);
+    });
+
+    request.on('data', function(chunk) {
+      body.results.push(JSON.parse(chunk));
+      console.log('CHUNK:', JSON.parse(chunk));
+    });
+
+    request.on('end', function() {
+      console.log('Body:', JSON.stringify(body.results));
+      console.log('body after:', body);
+    });
+
+    response.writeHead(201, headers);
+    response.end('Received message!');
+  } else if (method === "GET" && url === '/classes/messages') {
+    console.log('GET');
+
+
+    response.writeHead(200, headers);
+    // response.setHeader('Content-Type', 'text/plain');
+    response.on('data', function(chunk) {
+      body.results.push(chunk);
+    });
+    response.write(JSON.stringify(body));
+    response.end();
+  } else {
+    response.writeHead(404, {'Content-Type': 'text/plain'});
+    response.write('NOT FOUND');
+    response.end("Sorry. Does not compute.");
+  }
+
+
+
+
+  // The outgoing status.
+  // var statusCode = 200;
+
+/*
   // Tell the client we are sending them plain text.
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = "text/plain";
-  request.headers = headers;
-
-  request.on('error', function(error){ 
-    console.log('error!');
-  })
+  headers['Content-Type'] = "application/json";
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
+  response.on('data', function(chunk){
+    statusCode = 201;
+  });
+
   response.writeHead(statusCode, headers);
 
-
-
+  response.write(JSON.stringify(body));
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -60,7 +109,10 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end({});
+  // response.write(JSON.stringify({}));
+
+  response.end();
+  */
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -79,4 +131,4 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10 // Seconds.
 };
 
-exports.requestHandler = requestHandler;
+module.exports = requestHandler;
